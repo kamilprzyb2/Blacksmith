@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SmithyManager : MonoBehaviour
 {
-    private const float MARGIN_BETWEEN_CUTS = 1f;
-    private const float HIT_COOLDOWN = 0.05f;
+    private const float MARGIN_BETWEEN_CUTS = 1.5f;
+    private const float HIT_COOLDOWN = 0.01f;
+    private const float SHAFT_GLOW_DISTANCE = 0.4f;
     private const KeyCode ACTION_KEY = KeyCode.Space;
     private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
 
@@ -15,9 +17,12 @@ public class SmithyManager : MonoBehaviour
 
     [SerializeField] private GameObject _cutTemplate;
     [SerializeField] private GameObject _shaftTemplate;
+    [SerializeField] private GameObject _blastTemplate;
 
     [SerializeField] private GameObject _barStart;
     [SerializeField] private GameObject _barEnd;
+    [SerializeField] private GameObject _spawnCutsY;
+    [SerializeField] private GameObject _spawnBlastY;
 
     [SerializeField] private Animator _blacksmithAnim;
     
@@ -42,6 +47,11 @@ public class SmithyManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene("Test");
+        }
+
         if (_running)
         {
 
@@ -59,10 +69,10 @@ public class SmithyManager : MonoBehaviour
                 float distance = Mathf.Abs(nearestCut - _shaft.transform.position.x);
                 Debug.Log(distance);
                 _score += (int) (distance * 10);
-                _cutsList.Remove(nearestCut);
+                //_cutsList.Remove(nearestCut);
                 _clicksLeft--;
 
-                _blacksmithAnim.Play("Blacksmith_Hit");
+                _blacksmithAnim.Play("Blacksmith_Hit", 0, 0);                
             }
 
 
@@ -78,6 +88,8 @@ public class SmithyManager : MonoBehaviour
                     _barEnd.transform.position,
                     _shaftSpeed * Time.deltaTime);
             }
+
+            ShaftState();
         }
     }
 
@@ -109,7 +121,7 @@ public class SmithyManager : MonoBehaviour
         {
             Instantiate(
                 _cutTemplate, 
-                new Vector2(cut, _barStart.transform.position.y), 
+                new Vector2(cut, _spawnCutsY.transform.position.y), 
                 Quaternion.identity)
                     .transform.SetParent(_cutsParent.transform);
         }
@@ -126,5 +138,27 @@ public class SmithyManager : MonoBehaviour
         _cooldown = true;
         yield return new WaitForSeconds(HIT_COOLDOWN);
         _cooldown = false;
+    }
+
+    private void ShaftState()
+    {
+        bool shouldGlow = false;
+        foreach(var cut in _cutsList)
+        {
+            if ((cut - _shaft.transform.position.x < SHAFT_GLOW_DISTANCE) &&
+               (cut - _shaft.transform.position.x > 0))
+            {
+                shouldGlow = true;
+            }
+        }
+        _shaft.GetComponent<Animator>().SetBool("Glow", shouldGlow);
+    }
+
+    public void SpawnBlast()
+    {
+        Instantiate(
+            _blastTemplate,
+            new Vector2(_shaft.transform.position.x, _spawnBlastY.transform.position.y),
+            Quaternion.identity);
     }
 }
