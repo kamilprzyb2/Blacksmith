@@ -17,6 +17,6 @@ MonoBehaviour:
   requiresCuts: 4
   shaftSpeed: 2.5
   baseUsage: 1
-  baseDamage: 3
+  baseDamage: 5
   usagesLeft: 0
   addedUsage: 0

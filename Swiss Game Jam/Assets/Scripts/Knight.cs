@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Knight : MonoBehaviour
@@ -9,6 +10,7 @@ public class Knight : MonoBehaviour
     private AudioSource _audio;
 
     [SerializeField] private AudioClip _swordBreak;
+    [SerializeField] private GameObject _MarkupTemplate;
     private void Start()
     {
         _anim = GetComponent<Animator>();
@@ -37,6 +39,11 @@ public class Knight : MonoBehaviour
         Sword currentSword = CurrentGameState.CurrentSword();
         Debug.Log("Uderzam " + currentSword.swordName);
         _currentEnemy.HP -= currentSword.baseDamage;
+
+        Debug.Log("ENEMY POS " + _currentEnemy.transform.position.x);
+
+        GameObject markup = Instantiate(_MarkupTemplate, _currentEnemy.transform.position, Quaternion.identity);
+        markup.GetComponentInChildren<TextMeshPro>().text = currentSword.baseDamage.ToString();
 
         if (_currentEnemy.HP <= 0)
         {

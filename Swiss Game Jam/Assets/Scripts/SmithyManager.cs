@@ -11,6 +11,7 @@ public class SmithyManager : MonoBehaviour
     private const float HIT_COOLDOWN = 0.05f;
     private const float SHAFT_GLOW_DISTANCE = 0.6f;
     private const float DELAY_BETWEEN_SWORDS = 0.5f;
+    private const float DELAY_FOR_BAR_ANIM = 1f;
 
     public List<Sword> swords;
     public int currentSwordIndex = -1;
@@ -23,6 +24,7 @@ public class SmithyManager : MonoBehaviour
     [SerializeField] private GameObject _shaftTemplate;
     [SerializeField] private GameObject _blastTemplate;
 
+    [SerializeField] private GameObject _bar;
     [SerializeField] private GameObject _barStart;
     [SerializeField] private GameObject _barEnd;
     [SerializeField] private GameObject _spawnCutsY;
@@ -46,10 +48,21 @@ public class SmithyManager : MonoBehaviour
         _shaftSpeed = shaftSpeed;
 
         _cutsList = new List<float>();
+
+        ResetBlacksmith();
         GenerateCuts();
         DrawCuts();
 
         _shaft = Instantiate(_shaftTemplate, _barStart.transform.position, Quaternion.identity);
+        //_shaft.transform.SetParent(_barStart.transform);
+
+        // this is so fucking retarded 
+        var dumb = new GameObject();
+        dumb.transform.parent = _bar.transform;
+        _shaft.transform.parent = dumb.transform;
+
+        _bar.GetComponent<Animator>().Play("Bar_Show");
+
         StartCoroutine(Run());
     }
 
@@ -61,9 +74,10 @@ public class SmithyManager : MonoBehaviour
             return;
         }
         currentSwordIndex = 0;
-        //Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
+        //Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));       
+
         Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
-            CurrentGameState.swords[currentSwordIndex].shaftSpeed);
+             CurrentGameState.swords[currentSwordIndex].shaftSpeed);
     }
 
     void Update()
@@ -163,6 +177,7 @@ public class SmithyManager : MonoBehaviour
     }
     IEnumerator Run()
     {
+        yield return new WaitForSeconds(DELAY_FOR_BAR_ANIM);
         int secondsLeft = _secondsToPrepare;
         _uiText.color = Color.white;
 
@@ -261,23 +276,28 @@ public class SmithyManager : MonoBehaviour
             if (CurrentGameState.swords[currentSwordIndex + 1] != null)
             {
                 currentSwordIndex++;
-                ResetBlacksmith();
+                //ResetBlacksmith();
                 Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
                 CurrentGameState.swords[currentSwordIndex].shaftSpeed);
             }
             else
             {
                 CurrentGameState.state = GameState.AFTERDIALOGUE;
-                ResetBlacksmith();
+                //ResetBlacksmith();
                 _uiText.text = "";
                 currentSwordIndex = -1;
+
+                _bar.GetComponent<Animator>().Play("Bar_Hide");
             }
         }
         else
         {
             CurrentGameState.state = GameState.AFTERDIALOGUE;
-            ResetBlacksmith();
+            //ResetBlacksmith();
+            _uiText.text = "";
             currentSwordIndex = -1;
+
+            _bar.GetComponent<Animator>().Play("Bar_Hide");
         }
 
     }
