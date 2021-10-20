@@ -6,10 +6,13 @@ using UnityEngine.SceneManagement;
 public class SmithyManager : MonoBehaviour
 {
     private const float MARGIN_BETWEEN_CUTS = 1.5f;
-    private const float HIT_COOLDOWN = 0.01f;
-    private const float SHAFT_GLOW_DISTANCE = 0.4f;
+    private const float HIT_COOLDOWN = 0.05f;
+    private const float SHAFT_GLOW_DISTANCE = 1f;
     private const KeyCode ACTION_KEY = KeyCode.Space;
     private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
+
+    public List<Sword> swords;
+    public int currentSwordIndex = 0;
 
     [SerializeField] private int _numberOfCuts = 1;
     [SerializeField] private float _timeToPrepare = 3f;
@@ -37,6 +40,19 @@ public class SmithyManager : MonoBehaviour
 
     void Start()
     {
+        //GameplayManager.SetUp();
+        //swords.Add(GameplayManager.swords[0]);
+
+        Sword sword = swords[0];
+        Debug.Log(string.Format("Repairing {0}", sword.swordName));
+        Play(sword.requiresCuts, sword.shaftSpeed);
+    }
+
+    void Play(int numberOfCuts, float shaftSpeed)
+    {
+        _numberOfCuts = numberOfCuts;
+        _shaftSpeed = shaftSpeed;
+
         _cutsList = new List<float>();
         GenerateCuts();
         DrawCuts();
@@ -44,6 +60,7 @@ public class SmithyManager : MonoBehaviour
         _shaft = Instantiate(_shaftTemplate, _barStart.transform.position, Quaternion.identity);
         StartCoroutine(Run());
     }
+
 
     void Update()
     {
@@ -64,22 +81,32 @@ public class SmithyManager : MonoBehaviour
                     return;
                 }
 
-                float nearestCut = _cutsList[0];
+                float nextCut = _cutsList[_cutsList.Count - _clicksLeft];
 
-                float distance = Mathf.Abs(nearestCut - _shaft.transform.position.x);
+                float distance = Mathf.Abs(nextCut - _shaft.transform.position.x);
                 Debug.Log(distance);
-                _score += (int) (distance * 10);
-                //_cutsList.Remove(nearestCut);
+                _score += (int) (distance * 100);
                 _clicksLeft--;
 
-                _blacksmithAnim.Play("Blacksmith_Hit", 0, 0);                
+                _blacksmithAnim.Play("Blacksmith_Hit", 0, 0);
+                Cooldown();
             }
 
 
             if (_shaft.transform.position.x >= _barEnd.transform.position.x)
             {
                 _running = false;
+                _score /= _numberOfCuts;
                 Debug.Log(string.Format("Your score is {0}", _score));
+
+                if(currentSwordIndex < swords.Count-1)
+                {
+                    ResetBlacksmith();
+                    currentSwordIndex++;
+                    Sword sword = swords[currentSwordIndex];
+                    Debug.Log(string.Format("Repairing {0}", sword.swordName));
+                    Play(sword.requiresCuts, sword.shaftSpeed);
+                }
             }
             else
             {
@@ -92,7 +119,6 @@ public class SmithyManager : MonoBehaviour
             ShaftState();
         }
     }
-
     void GenerateCuts()
     {
         while (_cutsList.Count < _numberOfCuts)
@@ -132,14 +158,12 @@ public class SmithyManager : MonoBehaviour
         _running = true;
         _clicksLeft = _numberOfCuts;
     }
-
     IEnumerator Cooldown()
     {
         _cooldown = true;
         yield return new WaitForSeconds(HIT_COOLDOWN);
         _cooldown = false;
     }
-
     private void ShaftState()
     {
         bool shouldGlow = false;
@@ -153,7 +177,14 @@ public class SmithyManager : MonoBehaviour
         }
         _shaft.GetComponent<Animator>().SetBool("Glow", shouldGlow);
     }
-
+    private void ResetBlacksmith()
+    {
+        Destroy(_shaft);
+        foreach(Transform cut in _cutsParent.transform)
+        {
+            Destroy(cut.gameObject);
+        }
+    }
     public void SpawnBlast()
     {
         Instantiate(
