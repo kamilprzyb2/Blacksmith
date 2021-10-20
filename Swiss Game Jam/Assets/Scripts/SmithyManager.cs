@@ -5,14 +5,14 @@ using UnityEngine.SceneManagement;
 
 public class SmithyManager : MonoBehaviour
 {
-    private const float MARGIN_BETWEEN_CUTS = 1.5f;
+    private const float MARGIN_BETWEEN_CUTS = 0.3f;
     private const float HIT_COOLDOWN = 0.05f;
     private const float SHAFT_GLOW_DISTANCE = 1f;
     private const KeyCode ACTION_KEY = KeyCode.Space;
     private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
 
     public List<Sword> swords;
-    public int currentSwordIndex = 0;
+    public int currentSwordIndex = -1;
 
     [SerializeField] private int _numberOfCuts = 1;
     [SerializeField] private float _timeToPrepare = 3f;
@@ -43,9 +43,9 @@ public class SmithyManager : MonoBehaviour
         //GameplayManager.SetUp();
         //swords.Add(GameplayManager.swords[0]);
 
-        Sword sword = swords[0];
-        Debug.Log(string.Format("Repairing {0}", sword.swordName));
-        Play(sword.requiresCuts, sword.shaftSpeed);
+        //Sword sword = swords[0];
+        //Debug.Log(string.Format("Repairing {0}", sword.swordName));
+        //Play(sword.requiresCuts, sword.shaftSpeed);
     }
 
     void Play(int numberOfCuts, float shaftSpeed)
@@ -64,10 +64,15 @@ public class SmithyManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (CurrentGameState.state != GameState.SMITHING)
         {
-            SceneManager.LoadScene("Test");
+            return;
         }
+
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    SceneManager.LoadScene("Test");
+        //}
 
         if (_running)
         {
@@ -99,13 +104,22 @@ public class SmithyManager : MonoBehaviour
                 _score /= _numberOfCuts;
                 Debug.Log(string.Format("Your score is {0}", _score));
 
-                if(currentSwordIndex < swords.Count-1)
+                if (currentSwordIndex < CurrentGameState.swords.Length - 1)
                 {
-                    ResetBlacksmith();
-                    currentSwordIndex++;
-                    Sword sword = swords[currentSwordIndex];
-                    Debug.Log(string.Format("Repairing {0}", sword.swordName));
-                    Play(sword.requiresCuts, sword.shaftSpeed);
+                    if (CurrentGameState.swords[currentSwordIndex + 1] != null)
+                    {
+                        currentSwordIndex++;
+                        Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
+                        CurrentGameState.swords[currentSwordIndex].shaftSpeed);
+                    }
+                    else
+                    {
+                        CurrentGameState.state = GameState.SEARCHING;
+                    }
+                }
+                else
+                {
+                    CurrentGameState.state = GameState.SEARCHING;
                 }
             }
             else
@@ -117,6 +131,15 @@ public class SmithyManager : MonoBehaviour
             }
 
             ShaftState();
+        }
+        else if (currentSwordIndex < 0)
+        {
+            if (CurrentGameState.swords[0] != null)
+            {
+                currentSwordIndex = 0;
+                Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
+                    CurrentGameState.swords[currentSwordIndex].shaftSpeed);
+            }
         }
     }
     void GenerateCuts()

@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13ba94303e7a8304b9e0bf02d79c3612, type: 3}
-  m_Name: Test1 2
+  m_Name: Starter
   m_EditorClassIdentifier: 
-  swordName: Test3
-  requiresCuts: 5
-  shaftSpeed: 4
+  swordName: N00b Sword
+  requiresCuts: 2
+  shaftSpeed: 2
   baseUsage: 1
   baseDamage: 3
