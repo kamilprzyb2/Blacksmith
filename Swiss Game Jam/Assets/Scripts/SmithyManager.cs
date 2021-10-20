@@ -35,6 +35,10 @@ public class SmithyManager : MonoBehaviour
     [SerializeField] private GameObject _cutsParent;
 
     [SerializeField] private Text _uiText;
+    [SerializeField] private Color _colorGradePoor;
+    [SerializeField] private Color _colorGradeOK;
+    [SerializeField] private Color _colorGradeGood;
+    [SerializeField] private Color _colorGradePerfect;
 
     private List<float> _cutsList;
     private GameObject _shaft;
@@ -228,7 +232,7 @@ public class SmithyManager : MonoBehaviour
 
         if (_score < 20)
             grade = Grade.PERFECT;
-        else if (_score < 40)
+        else if (_score < 30)
             grade = Grade.GOOD;
         else if (_score < 70)
             grade = Grade.OK;
@@ -238,28 +242,28 @@ public class SmithyManager : MonoBehaviour
             case Grade.POOR:
                 {
                     _uiText.text = "POOR";
-                    _uiText.color = Color.red;
+                    _uiText.color = _colorGradePoor;
                     currentSword.addedUsage = 0;
                     break;
                 }
             case Grade.OK:
                 {
                     _uiText.text = "OK";
-                    _uiText.color = Color.yellow;
+                    _uiText.color = _colorGradeOK;
                     currentSword.addedUsage = 1;
                     break;
                 }
             case Grade.GOOD:
                 {
                     _uiText.text = "GOOD";
-                    _uiText.color = Color.green;
+                    _uiText.color = _colorGradeGood;
                     currentSword.addedUsage = 2;
                     break;
                 }
             case Grade.PERFECT:
                 {
                     _uiText.text = "PERFECT";
-                    _uiText.color = Color.green;
+                    _uiText.color = _colorGradePerfect;
                     currentSword.addedUsage = 3;
                     break;
                 }

@@ -7,6 +7,7 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private Sword[] _starterSwords = new Sword[3];
 
     [SerializeField] private SmithyManager _smithyManager;
+    [SerializeField] private LevelManager _levelManager;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private GameObject _knight;
     [SerializeField] private float _knightSpeed = 1f;
@@ -62,6 +63,9 @@ public class GameplayManager : MonoBehaviour
                         Debug.Log("DZIÊKI CHUJU");
                         CurrentGameState.ResetSwordUsages();
                         CurrentGameState.currentSwordIndex = 0;
+
+                        _levelManager.ChangeLevel();
+
                         _transitionFlag = true;
                     }
 

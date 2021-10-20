@@ -11,6 +11,7 @@ public class Knight : MonoBehaviour
 
     [SerializeField] private AudioClip _swordBreak;
     [SerializeField] private GameObject _MarkupTemplate;
+    [SerializeField] private LevelManager _levelManager;
     private void Start()
     {
         _anim = GetComponent<Animator>();
@@ -112,6 +113,12 @@ public class Knight : MonoBehaviour
 
         Destroy(_currentEnemy.gameObject);
         _currentEnemy = null;
-        CurrentGameState.state = GameState.SEARCHING;
+
+        Debug.Log("XXX " + _levelManager.EnemiesRemaining());
+
+        if (_levelManager.EnemiesRemaining() <= 0)
+            CurrentGameState.state = GameState.RETRIEVING;
+        else
+            CurrentGameState.state = GameState.SEARCHING;
     }
 }
