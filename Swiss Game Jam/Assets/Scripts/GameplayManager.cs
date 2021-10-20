@@ -6,6 +6,7 @@ public class GameplayManager : MonoBehaviour
 {
     [SerializeField] private Sword[] _starterSwords = new Sword[3];
 
+    [SerializeField] private SmithyManager _smithyManager;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private GameObject _knight;
     [SerializeField] private float _knightSpeed = 1f;
@@ -14,12 +15,22 @@ public class GameplayManager : MonoBehaviour
     private Vector3 _cameraStartPos;
     private Vector3 _velocity = Vector3.zero;
 
-    private bool _messageSent = false;
+    private bool _transitionFlag = false;
 
     void Start()
     {
         _cameraStartPos = _cameraTransform.position;
-        CurrentGameState.swords = _starterSwords;
+
+        int i = 0; //whatever
+        foreach(Sword sword in _starterSwords)
+        {
+            if (sword != null && i < CurrentGameState.swords.Length)
+            {
+                CurrentGameState.swords[i] = Instantiate(sword);
+            }
+            i++;
+        }
+
         CurrentGameState.state = GameState.SEARCHING;
     }
 
@@ -29,24 +40,29 @@ public class GameplayManager : MonoBehaviour
         {
             case GameState.STARTDIALOGUE:
                 {
-                    if (!_messageSent)
+                    if (!_transitionFlag)
                     {
                         Debug.Log("CHUJU NAPRAW MI MIECZ");
-                        _messageSent = true;
+                        _transitionFlag = true;
                     }
 
                     if (Input.anyKeyDown)
                     {
                         CurrentGameState.state = GameState.SMITHING;
                     }
+
+                    MoveCameraToSmith();
+
                     break; 
                 }
             case GameState.AFTERDIALOGUE:
                 {
-                    if (!_messageSent)
+                    if (!_transitionFlag)
                     {
                         Debug.Log("DZIÊKI CHUJU");
-                        _messageSent = true;
+                        CurrentGameState.ResetSwordUsages();
+                        CurrentGameState.currentSwordIndex = 0;
+                        _transitionFlag = true;
                     }
 
                     if (Input.anyKeyDown)
@@ -57,9 +73,12 @@ public class GameplayManager : MonoBehaviour
                 }
             case GameState.SMITHING:
             {
+                    if (_transitionFlag)
+                        _smithyManager.Kickoff();
+
                     MoveCameraToSmith();
                     // All smithing logic in SmithyManager
-                    _messageSent = false;
+                    _transitionFlag = false;
                     break;
             }
             case GameState.SEARCHING:
@@ -69,28 +88,16 @@ public class GameplayManager : MonoBehaviour
 
                     MoveCameraWithKnight();
 
-                    _messageSent = false;
-
-                    //temp shit
-
-                    CurrentGameState.currentSwordIndex = 0;
-
-                    foreach (Sword sword in CurrentGameState.swords)
-                    {
-                        if (sword != null)
-                        {
-                            sword.usagesLeft = sword.baseUsage;
-                        }
-                    }
+                    _transitionFlag = false;
 
                     break;
                 }
             case GameState.FIGHTING:
                 {
-                    if (!_messageSent)
+                    if (!_transitionFlag)
                     {
                         Debug.Log("JAKAŒ WALKA KURWA TEN");
-                        _messageSent = true;
+                        _transitionFlag = true;
                     }
 
                     break;
@@ -102,14 +109,13 @@ public class GameplayManager : MonoBehaviour
 
                     MoveCameraWithKnight();
 
-                    _messageSent = false;
+                    _transitionFlag = false;
 
                     break;
                 }
 
         }        
     }
-
     void MoveCameraWithKnight()
     {
         Vector3 cameraTarget = new Vector3(
@@ -122,7 +128,6 @@ public class GameplayManager : MonoBehaviour
             ref _velocity,
             _smoothTime);
     }
-
     void MoveCameraToSmith()
     {
         _cameraTransform.position = Vector3.SmoothDamp(

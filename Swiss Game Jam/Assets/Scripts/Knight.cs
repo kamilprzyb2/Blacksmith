@@ -6,10 +6,13 @@ public class Knight : MonoBehaviour
 {
     private Enemy _currentEnemy;
     private Animator _anim;
+    private AudioSource _audio;
 
+    [SerializeField] private AudioClip _swordBreak;
     private void Start()
     {
         _anim = GetComponent<Animator>();
+        _audio = GetComponent<AudioSource>();
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -32,13 +35,12 @@ public class Knight : MonoBehaviour
     public void HitEnemy()
     {
         Sword currentSword = CurrentGameState.CurrentSword();
+        Debug.Log("Uderzam " + currentSword.swordName);
         _currentEnemy.HP -= currentSword.baseDamage;
 
         if (_currentEnemy.HP <= 0)
         {
-            Destroy(_currentEnemy.gameObject);
-            _currentEnemy = null;
-            CurrentGameState.state = GameState.SEARCHING;
+            KillEnemy();
         }
 
         currentSword.usagesLeft--;
@@ -46,8 +48,11 @@ public class Knight : MonoBehaviour
         if (currentSword.usagesLeft <= 0)
         {
             Debug.Log("Miecz rozjebany");
+            _audio.clip = _swordBreak;
+            _audio.Play();
 
-            if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1)
+            if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1 &&
+                CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null)
             {
                 Debug.Log(string.Format("Biore miecz nr {0}", ++CurrentGameState.currentSwordIndex));
             }
@@ -65,5 +70,41 @@ public class Knight : MonoBehaviour
         }
     }
 
+    private void KillEnemy()
+    {
+        // weapon pickup mechanic
+        if (_currentEnemy.weapon != null)
+        {
+            int worstSlot = 0;
+            SwordTier worstTier = SwordTier.DIAMOND;
+            for (int i = 0; i < CurrentGameState.swords.Length; i++)
+            {
+                if (CurrentGameState.swords[i] == null)
+                {
+                    worstSlot = i;
+                    worstTier = SwordTier.NULL;
+                    break;
+                }
 
+                if (CurrentGameState.swords[i].tier < worstTier)
+                {
+                    worstSlot = i;
+                    worstTier = CurrentGameState.swords[i].tier;
+                }
+            }
+
+            if (worstTier < _currentEnemy.weapon.tier)
+            {
+                CurrentGameState.swords[worstSlot] = Instantiate(_currentEnemy.weapon);
+                Debug.Log(string.Format("Podnosze {0} w slot {1}",
+                    _currentEnemy.weapon.swordName,
+                    worstSlot));
+            }
+
+        }
+
+        Destroy(_currentEnemy.gameObject);
+        _currentEnemy = null;
+        CurrentGameState.state = GameState.SEARCHING;
+    }
 }

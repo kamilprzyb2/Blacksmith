@@ -8,6 +8,6 @@ public class SpawnBlast : MonoBehaviour
 
     void Spawn()
     {
-        _manager.SpawnBlast();
+        _manager.MakeACut();
     }
 }

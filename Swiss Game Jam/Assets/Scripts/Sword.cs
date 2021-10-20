@@ -6,10 +6,12 @@ using UnityEngine;
 public class Sword : ScriptableObject
 {
     public string swordName = "New Sword";
+    public SwordTier tier = SwordTier.COPPER;
     public int requiresCuts = 3;
     public float shaftSpeed = 3f;
     public int baseUsage = 1;
     public int baseDamage = 3;
 
     public int usagesLeft;
+    public int addedUsage = 0;
 }

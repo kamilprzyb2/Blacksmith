@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Test1 2
   m_EditorClassIdentifier: 
   swordName: Test3
+  tier: 1
   requiresCuts: 4
-  shaftSpeed: 2.5
+  shaftSpeed: 3.5
   baseUsage: 1
   baseDamage: 3
+  usagesLeft: 0
+  addedUsage: 0

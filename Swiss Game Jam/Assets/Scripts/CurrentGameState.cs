@@ -12,4 +12,13 @@ public static class CurrentGameState
     {
         return swords[currentSwordIndex];
     }
+
+    public static void ResetSwordUsages()
+    {
+        foreach (Sword sword in swords)
+        {
+            if (sword != null)
+                sword.usagesLeft = sword.baseUsage + sword.addedUsage;
+        }
+    }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SmithyManager : MonoBehaviour
 {
@@ -9,15 +10,14 @@ public class SmithyManager : MonoBehaviour
     private const int GENERATOR_TIMEOUT_AFTER = 40;
     private const float HIT_COOLDOWN = 0.05f;
     private const float SHAFT_GLOW_DISTANCE = 0.6f;
-    //private const KeyCode ACTION_KEY = KeyCode.Space;
-    //private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
+    private const float DELAY_BETWEEN_SWORDS = 0.5f;
 
     public List<Sword> swords;
     public int currentSwordIndex = -1;
 
-    [SerializeField] private int _numberOfCuts = 1;
-    [SerializeField] private float _timeToPrepare = 3f;
-    [SerializeField] private float _shaftSpeed = 2f;
+    private int _numberOfCuts = 1;
+    [SerializeField] private int _secondsToPrepare = 5;
+    private float _shaftSpeed = 2f;
 
     [SerializeField] private GameObject _cutTemplate;
     [SerializeField] private GameObject _shaftTemplate;
@@ -30,7 +30,9 @@ public class SmithyManager : MonoBehaviour
 
     [SerializeField] private Animator _blacksmithAnim;
     
-    [SerializeField] private GameObject _cutsParent; 
+    [SerializeField] private GameObject _cutsParent;
+
+    [SerializeField] private Text _uiText;
 
     private List<float> _cutsList;
     private GameObject _shaft;
@@ -51,9 +53,22 @@ public class SmithyManager : MonoBehaviour
         StartCoroutine(Run());
     }
 
+    public void Kickoff()
+    {
+        if (CurrentGameState.swords[0] == null)
+        {
+            Debug.LogError("SWORD 0 IS NULL?!");
+            return;
+        }
+        currentSwordIndex = 0;
+        //Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
+        Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
+            CurrentGameState.swords[currentSwordIndex].shaftSpeed);
+    }
 
     void Update()
     {
+        // safety
         if (CurrentGameState.state != GameState.SMITHING)
         {
             return;
@@ -61,8 +76,14 @@ public class SmithyManager : MonoBehaviour
 
         if (_running)
         {
-
-            if (Input.anyKeyDown && _clicksLeft > 0 && !_cooldown)
+            if (_clicksLeft == 0)
+            {
+                _score /= _numberOfCuts;
+                Debug.Log(string.Format("Your score is {0}", _score));
+                ApplyScore();
+                _clicksLeft = -1;
+            }
+            else if (Input.anyKeyDown && _clicksLeft > 0 && !_cooldown)
             {
                 if (_cutsList.Count == 0)
                 {
@@ -70,47 +91,22 @@ public class SmithyManager : MonoBehaviour
                     return;
                 }
 
-                float nextCut = _cutsList[_cutsList.Count - _clicksLeft];
-
-                float distance = Mathf.Abs(nextCut - _shaft.transform.position.x);
-                Debug.Log(distance);
-                _score += (int) (distance * 100);
-                _clicksLeft--;
-
-                _blacksmithAnim.Play("Blacksmith_Hit", 0, 0);
+                _blacksmithAnim.Play("Blacksmith_Hit", 0, 0);                
                 Cooldown();
             }
-
 
             if (_shaft.transform.position.x >= _barEnd.transform.position.x)
             {
                 _running = false;
-                _score /= _numberOfCuts;
-                Debug.Log(string.Format("Your score is {0}", _score));
 
-                if (currentSwordIndex < CurrentGameState.swords.Length - 1)
+                if (_clicksLeft > 0)
                 {
-                    if (CurrentGameState.swords[currentSwordIndex + 1] != null)
-                    {
-                        currentSwordIndex++;
-                        ResetBlacksmith();
-                        Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
-                        Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
-                        CurrentGameState.swords[currentSwordIndex].shaftSpeed);
-                    }
-                    else
-                    {
-                        CurrentGameState.state = GameState.AFTERDIALOGUE;
-                        ResetBlacksmith();
-                        currentSwordIndex = -1;
-                    }
+                    _score = int.MaxValue;
+                    ApplyScore();
                 }
-                else
-                {
-                    CurrentGameState.state = GameState.AFTERDIALOGUE;
-                    ResetBlacksmith();
-                    currentSwordIndex = -1;
-                }
+
+                StartCoroutine(FinishSword());
+
             }
             else
             {
@@ -121,16 +117,6 @@ public class SmithyManager : MonoBehaviour
             }
 
             ShaftState();
-        }
-        else if (currentSwordIndex < 0)
-        {
-            if (CurrentGameState.swords[0] != null)
-            {
-                currentSwordIndex = 0;
-                Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
-                Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
-                    CurrentGameState.swords[currentSwordIndex].shaftSpeed);
-            }
         }
     }
     void GenerateCuts()
@@ -177,9 +163,20 @@ public class SmithyManager : MonoBehaviour
     }
     IEnumerator Run()
     {
-        yield return new WaitForSeconds(_timeToPrepare);
-        _running = true;
-        _clicksLeft = _numberOfCuts;
+        int secondsLeft = _secondsToPrepare;
+        _uiText.color = Color.white;
+
+        while (secondsLeft > 0)
+        {
+            _uiText.text = secondsLeft.ToString();
+            secondsLeft--;
+            yield return new WaitForSeconds(1f);
+        }
+        
+            _uiText.text = secondsLeft.ToString();
+
+            _running = true;
+            _clicksLeft = _numberOfCuts;
     }
     IEnumerator Cooldown()
     {
@@ -207,9 +204,93 @@ public class SmithyManager : MonoBehaviour
         {
             Destroy(cut.gameObject);
         }
+        _score = 0;
     }
-    public void SpawnBlast()
+    private void ApplyScore()
     {
+        Sword currentSword = CurrentGameState.swords[currentSwordIndex];
+        Grade grade = Grade.POOR;
+
+        if (_score < 20)
+            grade = Grade.PERFECT;
+        else if (_score < 40)
+            grade = Grade.GOOD;
+        else if (_score < 70)
+            grade = Grade.OK;
+
+        switch (grade)
+        {
+            case Grade.POOR:
+                {
+                    _uiText.text = "POOR";
+                    _uiText.color = Color.red;
+                    currentSword.addedUsage = 0;
+                    break;
+                }
+            case Grade.OK:
+                {
+                    _uiText.text = "OK";
+                    _uiText.color = Color.yellow;
+                    currentSword.addedUsage = 1;
+                    break;
+                }
+            case Grade.GOOD:
+                {
+                    _uiText.text = "GOOD";
+                    _uiText.color = Color.green;
+                    currentSword.addedUsage = 2;
+                    break;
+                }
+            case Grade.PERFECT:
+                {
+                    _uiText.text = "PERFECT";
+                    _uiText.color = Color.green;
+                    currentSword.addedUsage = 3;
+                    break;
+                }
+        }
+
+
+    }
+    IEnumerator FinishSword()
+    {
+        yield return new WaitForSeconds(DELAY_BETWEEN_SWORDS);
+
+        if (currentSwordIndex < CurrentGameState.swords.Length - 1)
+        {
+            if (CurrentGameState.swords[currentSwordIndex + 1] != null)
+            {
+                currentSwordIndex++;
+                ResetBlacksmith();
+                Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
+                CurrentGameState.swords[currentSwordIndex].shaftSpeed);
+            }
+            else
+            {
+                CurrentGameState.state = GameState.AFTERDIALOGUE;
+                ResetBlacksmith();
+                _uiText.text = "";
+                currentSwordIndex = -1;
+            }
+        }
+        else
+        {
+            CurrentGameState.state = GameState.AFTERDIALOGUE;
+            ResetBlacksmith();
+            currentSwordIndex = -1;
+        }
+
+    }
+    public void MakeACut()
+    {
+
+        float nextCut = _cutsList[_cutsList.Count - _clicksLeft];
+
+        float distance = Mathf.Abs(nextCut - _shaft.transform.position.x);
+        //Debug.Log(distance);
+        _score += (int)(distance * 100);
+        _clicksLeft--;
+
         Instantiate(
             _blastTemplate,
             new Vector2(_shaft.transform.position.x, _spawnBlastY.transform.position.y),
