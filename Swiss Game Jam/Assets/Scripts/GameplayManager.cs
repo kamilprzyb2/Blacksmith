@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private GameObject _knight;
     [SerializeField] private float _knightSpeed = 1f;
     [SerializeField] private float _smoothTime = 0.3f;
+
+    [SerializeField] private Image _sword1;
+    [SerializeField] private Image _sword2;
+    [SerializeField] private Image _sword3;
 
     private Vector3 _cameraStartPos;
     private Vector3 _velocity = Vector3.zero;
@@ -33,6 +38,7 @@ public class GameplayManager : MonoBehaviour
         }
 
         CurrentGameState.state = GameState.SEARCHING;
+        UpdateUI();
     }
 
     void Update()
@@ -147,4 +153,63 @@ public class GameplayManager : MonoBehaviour
             ref _velocity,
             _smoothTime);
     }
+
+    public void UpdateUI()
+    {
+        if (CurrentGameState.swords[0] == null)
+        {
+            _sword1.color = new Color(
+                _sword1.color.r,
+                _sword1.color.g,
+                _sword1.color.b,
+                0f);
+        }
+        else
+        {
+            _sword1.sprite = CurrentGameState.swords[0].sprite;
+            _sword1.color = new Color(
+                _sword1.color.r,
+                _sword1.color.g,
+                _sword1.color.b,
+                255f);
+        }
+
+        if (CurrentGameState.swords[1] == null)
+        {
+            _sword2.color = new Color(
+                _sword2.color.r,
+                _sword2.color.g,
+                _sword2.color.b,
+                0f);
+        }
+        else
+        {
+            _sword2.sprite = CurrentGameState.swords[1].sprite;
+            _sword2.color = new Color(
+                _sword2.color.r,
+                _sword2.color.g,
+                _sword2.color.b,
+                255f);
+        }
+
+        if (CurrentGameState.swords[2] == null)
+        {
+            _sword3.color = new Color(
+                 _sword3.color.r,
+                 _sword3.color.g,
+                 _sword3.color.b,
+                 0f);
+        }
+        else
+        {
+            _sword3.sprite = CurrentGameState.swords[2].sprite;
+            _sword3.color = new Color(
+                _sword3.color.r,
+                _sword3.color.g,
+                _sword3.color.b,
+                255f);
+        }
+
+    }
+
 }
