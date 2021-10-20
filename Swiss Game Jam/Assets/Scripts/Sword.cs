@@ -9,5 +9,7 @@ public class Sword : ScriptableObject
     public int requiresCuts = 3;
     public float shaftSpeed = 3f;
     public int baseUsage = 1;
-    public float baseDamage = 3f;
+    public int baseDamage = 3;
+
+    public int usagesLeft;
 }

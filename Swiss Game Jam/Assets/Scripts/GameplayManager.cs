@@ -71,6 +71,18 @@ public class GameplayManager : MonoBehaviour
 
                     _messageSent = false;
 
+                    //temp shit
+
+                    CurrentGameState.currentSwordIndex = 0;
+
+                    foreach (Sword sword in CurrentGameState.swords)
+                    {
+                        if (sword != null)
+                        {
+                            sword.usagesLeft = sword.baseUsage;
+                        }
+                    }
+
                     break;
                 }
             case GameState.FIGHTING:
@@ -79,11 +91,6 @@ public class GameplayManager : MonoBehaviour
                     {
                         Debug.Log("JAKAŒ WALKA KURWA TEN");
                         _messageSent = true;
-                    }
-
-                    if (Input.anyKeyDown)
-                    {
-                        CurrentGameState.state = GameState.RETRIEVING;
                     }
 
                     break;

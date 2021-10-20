@@ -94,6 +94,7 @@ public class SmithyManager : MonoBehaviour
                     {
                         currentSwordIndex++;
                         ResetBlacksmith();
+                        Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
                         Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
                         CurrentGameState.swords[currentSwordIndex].shaftSpeed);
                     }
@@ -126,6 +127,7 @@ public class SmithyManager : MonoBehaviour
             if (CurrentGameState.swords[0] != null)
             {
                 currentSwordIndex = 0;
+                Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));
                 Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
                     CurrentGameState.swords[currentSwordIndex].shaftSpeed);
             }
