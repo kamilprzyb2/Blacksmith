@@ -5,11 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class SmithyManager : MonoBehaviour
 {
-    private const float MARGIN_BETWEEN_CUTS = 0.3f;
+    private const float MARGIN_BETWEEN_CUTS = 1f;
+    private const int GENERATOR_TIMEOUT_AFTER = 40;
     private const float HIT_COOLDOWN = 0.05f;
-    private const float SHAFT_GLOW_DISTANCE = 1f;
-    private const KeyCode ACTION_KEY = KeyCode.Space;
-    private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
+    private const float SHAFT_GLOW_DISTANCE = 0.6f;
+    //private const KeyCode ACTION_KEY = KeyCode.Space;
+    //private const KeyCode ACTION_KEY2 = KeyCode.Mouse0;
 
     public List<Sword> swords;
     public int currentSwordIndex = -1;
@@ -37,17 +38,6 @@ public class SmithyManager : MonoBehaviour
     private bool _cooldown = false;
     private int _clicksLeft = 0;
     private int _score = 0;
-
-    void Start()
-    {
-        //GameplayManager.SetUp();
-        //swords.Add(GameplayManager.swords[0]);
-
-        //Sword sword = swords[0];
-        //Debug.Log(string.Format("Repairing {0}", sword.swordName));
-        //Play(sword.requiresCuts, sword.shaftSpeed);
-    }
-
     void Play(int numberOfCuts, float shaftSpeed)
     {
         _numberOfCuts = numberOfCuts;
@@ -69,16 +59,10 @@ public class SmithyManager : MonoBehaviour
             return;
         }
 
-        //if (Input.GetKeyDown(KeyCode.R))
-        //{
-        //    SceneManager.LoadScene("Test");
-        //}
-
         if (_running)
         {
 
-            if ((Input.GetKeyDown(ACTION_KEY) || Input.GetKeyDown(ACTION_KEY2))
-                    && _clicksLeft > 0 && !_cooldown)
+            if (Input.anyKeyDown && _clicksLeft > 0 && !_cooldown)
             {
                 if (_cutsList.Count == 0)
                 {
@@ -109,17 +93,22 @@ public class SmithyManager : MonoBehaviour
                     if (CurrentGameState.swords[currentSwordIndex + 1] != null)
                     {
                         currentSwordIndex++;
+                        ResetBlacksmith();
                         Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
                         CurrentGameState.swords[currentSwordIndex].shaftSpeed);
                     }
                     else
                     {
-                        CurrentGameState.state = GameState.SEARCHING;
+                        CurrentGameState.state = GameState.AFTERDIALOGUE;
+                        ResetBlacksmith();
+                        currentSwordIndex = -1;
                     }
                 }
                 else
                 {
-                    CurrentGameState.state = GameState.SEARCHING;
+                    CurrentGameState.state = GameState.AFTERDIALOGUE;
+                    ResetBlacksmith();
+                    currentSwordIndex = -1;
                 }
             }
             else
@@ -144,8 +133,15 @@ public class SmithyManager : MonoBehaviour
     }
     void GenerateCuts()
     {
+        int count = 0;
         while (_cutsList.Count < _numberOfCuts)
         {
+            if (count > GENERATOR_TIMEOUT_AFTER)
+            {
+                _cutsList.Clear();
+                count = 0;
+            }
+
             float randomX = Random.Range(
                 _barStart.transform.position.x + MARGIN_BETWEEN_CUTS,
                 _barEnd.transform.position.x - MARGIN_BETWEEN_CUTS);
@@ -160,6 +156,8 @@ public class SmithyManager : MonoBehaviour
 
             if (isGood)
                 _cutsList.Add(randomX);
+
+            count++;
         }
 
         _cutsList.Sort();

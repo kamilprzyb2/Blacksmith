@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   swordName: Test2
   requiresCuts: 4
-  shaftSpeed: 4
+  shaftSpeed: 2.5
   baseUsage: 1
   baseDamage: 3
