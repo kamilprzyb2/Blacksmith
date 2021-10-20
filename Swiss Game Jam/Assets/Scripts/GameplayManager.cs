@@ -43,7 +43,7 @@ public class GameplayManager : MonoBehaviour
                 {
                     if (!_transitionFlag)
                     {
-                        Debug.Log("CHUJU NAPRAW MI MIECZ");
+                        _knight.GetComponent<Animator>().SetBool("MoveRight", false);
                         _transitionFlag = true;
                     }
 
@@ -60,7 +60,6 @@ public class GameplayManager : MonoBehaviour
                 {
                     if (!_transitionFlag)
                     {
-                        Debug.Log("DZIÊKI CHUJU");
                         CurrentGameState.ResetSwordUsages();
                         CurrentGameState.currentSwordIndex = 0;
 
@@ -78,11 +77,14 @@ public class GameplayManager : MonoBehaviour
             case GameState.SMITHING:
             {
                     if (_transitionFlag)
-                        _smithyManager.Kickoff();
+                    {
+                        _smithyManager.Kickoff();                      
+                    }
 
                     MoveCameraToSmith();
                     // All smithing logic in SmithyManager
                     _transitionFlag = false;
+
                     break;
             }
             case GameState.SEARCHING:
@@ -92,6 +94,9 @@ public class GameplayManager : MonoBehaviour
 
                     MoveCameraWithKnight();
 
+
+                    _knight.GetComponent<Animator>().SetBool("MoveLeft", true);
+
                     _transitionFlag = false;
 
                     break;
@@ -100,7 +105,7 @@ public class GameplayManager : MonoBehaviour
                 {
                     if (!_transitionFlag)
                     {
-                        Debug.Log("JAKAŒ WALKA KURWA TEN");
+                        _knight.GetComponent<Animator>().SetBool("MoveLeft", false);
                         _transitionFlag = true;
                     }
 
@@ -114,6 +119,8 @@ public class GameplayManager : MonoBehaviour
                     MoveCameraWithKnight();
 
                     _transitionFlag = false;
+
+                    _knight.GetComponent<Animator>().SetBool("MoveRight", true);
 
                     break;
                 }

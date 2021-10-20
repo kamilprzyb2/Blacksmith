@@ -24,7 +24,7 @@ public class Knight : MonoBehaviour
             if (CurrentGameState.state == GameState.SEARCHING)
             {
                 CurrentGameState.state = GameState.FIGHTING;
-                _anim.Play("Knight_Attack");
+                _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);
             }
         }
         else if (other.GetComponent<KnightStop>() != null && 
@@ -37,11 +37,16 @@ public class Knight : MonoBehaviour
     // Called from Animation Event
     public void HitEnemy()
     {
-        Sword currentSword = CurrentGameState.CurrentSword();
-        Debug.Log("Uderzam " + currentSword.swordName);
-        _currentEnemy.HP -= currentSword.baseDamage;
+        // decriment attack counter
+        if (_anim.GetInteger("Attacks")> 0)
+            _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") - 1);
 
-        Debug.Log("ENEMY POS " + _currentEnemy.transform.position.x);
+
+        if (_currentEnemy == null)
+            return;
+
+        Sword currentSword = CurrentGameState.CurrentSword();
+        _currentEnemy.HP -= currentSword.baseDamage;
 
         GameObject markup = Instantiate(_MarkupTemplate, _currentEnemy.transform.position, Quaternion.identity);
         markup.GetComponentInChildren<TextMeshPro>().text = currentSword.baseDamage.ToString();
@@ -55,18 +60,16 @@ public class Knight : MonoBehaviour
 
         if (currentSword.usagesLeft <= 0)
         {
-            Debug.Log("Miecz rozjebany");
             _audio.clip = _swordBreak;
             _audio.Play();
 
             if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1 &&
                 CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null)
             {
-                Debug.Log(string.Format("Biore miecz nr {0}", ++CurrentGameState.currentSwordIndex));
+                // uselss?
             }
             else
             {
-                Debug.Log("Spierdalam");
                 CurrentGameState.state = GameState.RETRIEVING;
                 return;
             }
@@ -74,7 +77,7 @@ public class Knight : MonoBehaviour
 
         if (_currentEnemy != null)
         {
-            _anim.Play("Knight_Attack");
+            _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);
         }
     }
 
@@ -104,17 +107,12 @@ public class Knight : MonoBehaviour
             if (worstTier < _currentEnemy.weapon.tier)
             {
                 CurrentGameState.swords[worstSlot] = Instantiate(_currentEnemy.weapon);
-                Debug.Log(string.Format("Podnosze {0} w slot {1}",
-                    _currentEnemy.weapon.swordName,
-                    worstSlot));
             }
 
         }
 
         Destroy(_currentEnemy.gameObject);
         _currentEnemy = null;
-
-        Debug.Log("XXX " + _levelManager.EnemiesRemaining());
 
         if (_levelManager.EnemiesRemaining() <= 0)
             CurrentGameState.state = GameState.RETRIEVING;

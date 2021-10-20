@@ -57,6 +57,9 @@ public class SmithyManager : MonoBehaviour
         GenerateCuts();
         DrawCuts();
 
+        _uiText.text = "";
+        _uiText.GetComponent<Animator>().Play("Text_Idle");
+
         _shaft = Instantiate(_shaftTemplate, _barStart.transform.position, Quaternion.identity);
         //_shaft.transform.SetParent(_barStart.transform);
 
@@ -77,8 +80,7 @@ public class SmithyManager : MonoBehaviour
             Debug.LogError("SWORD 0 IS NULL?!");
             return;
         }
-        currentSwordIndex = 0;
-        //Debug.Log(string.Format("NAPRAWIAM MIECZ NUMER {0}", currentSwordIndex));       
+        currentSwordIndex = 0;  
 
         Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
              CurrentGameState.swords[currentSwordIndex].shaftSpeed);
@@ -97,7 +99,6 @@ public class SmithyManager : MonoBehaviour
             if (_clicksLeft == 0)
             {
                 _score /= _numberOfCuts;
-                Debug.Log(string.Format("Your score is {0}", _score));
                 ApplyScore();
                 _clicksLeft = -1;
             }
@@ -273,6 +274,7 @@ public class SmithyManager : MonoBehaviour
     }
     IEnumerator FinishSword()
     {
+        _uiText.GetComponent<Animator>().Play("Text_Fade_Out");
         yield return new WaitForSeconds(DELAY_BETWEEN_SWORDS);
 
         if (currentSwordIndex < CurrentGameState.swords.Length - 1)
@@ -288,9 +290,8 @@ public class SmithyManager : MonoBehaviour
             {
                 CurrentGameState.state = GameState.AFTERDIALOGUE;
                 //ResetBlacksmith();
-                _uiText.text = "";
+                
                 currentSwordIndex = -1;
-
                 _bar.GetComponent<Animator>().Play("Bar_Hide");
             }
         }
@@ -298,7 +299,6 @@ public class SmithyManager : MonoBehaviour
         {
             CurrentGameState.state = GameState.AFTERDIALOGUE;
             //ResetBlacksmith();
-            _uiText.text = "";
             currentSwordIndex = -1;
 
             _bar.GetComponent<Animator>().Play("Bar_Hide");
@@ -311,7 +311,6 @@ public class SmithyManager : MonoBehaviour
         float nextCut = _cutsList[_cutsList.Count - _clicksLeft];
 
         float distance = Mathf.Abs(nextCut - _shaft.transform.position.x);
-        //Debug.Log(distance);
         _score += (int)(distance * 100);
         _clicksLeft--;
 
