@@ -1761,9 +1761,9 @@ MonoBehaviour:
   _cutsParent: {fileID: 931160564}
   _uiText: {fileID: 725354913}
   _colorGradePoor: {r: 0.5, g: 0.17500001, b: 0.17500001, a: 1}
-  _colorGradeOK: {r: 0, g: 0, b: 0, a: 1}
-  _colorGradeGood: {r: 0, g: 0, b: 0, a: 1}
-  _colorGradePerfect: {r: 0, g: 0, b: 0, a: 1}
+  _colorGradeOK: {r: 0.6792453, g: 0.3691364, b: 0.16917051, a: 1}
+  _colorGradeGood: {r: 0.31564614, g: 0.5253007, b: 0.6509434, a: 1}
+  _colorGradePerfect: {r: 0.4855265, g: 0.6509434, b: 0.19282661, a: 1}
 --- !u!4 &1601611095
 Transform:
   m_ObjectHideFlags: 0
