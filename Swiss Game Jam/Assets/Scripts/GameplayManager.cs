@@ -10,7 +10,7 @@ public class GameplayManager : MonoBehaviour
 
     [SerializeField] private Sword[] _starterSwords = new Sword[3];
 
-    [SerializeField] private SmithyManager _smithyManager;
+    [SerializeField] public SmithyManager _smithyManager;
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private DialogueManager _dialogueManager;
     [SerializeField] private Transform _cameraTransform;
@@ -31,6 +31,9 @@ public class GameplayManager : MonoBehaviour
 
     void Start()
     {
+
+        CurrentGameState.state = GameState.START;
+
         _cameraStartPos = _cameraTransform.position;
 
         int i = 0; //whatever
@@ -44,15 +47,33 @@ public class GameplayManager : MonoBehaviour
             i++;
         }
 
-        CurrentGameState.state = GameState.SEARCHING;
-        _knight.GetComponent<Knight>().FootSteps(true);
+
     }
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         UpdateUI();
 
         switch (CurrentGameState.state)
         {
+            case GameState.START:
+                {
+                    if (Input.anyKeyDown)
+                    {
+                        CurrentGameState.state = GameState.SEARCHING;
+                        _knight.GetComponent<Knight>().FootSteps(true);
+
+                        _smithyManager._uiText.text = "";
+                    }
+
+                    break;
+                }
+
             case GameState.STARTDIALOGUE:
                 {
                     if (!_transitionFlag)

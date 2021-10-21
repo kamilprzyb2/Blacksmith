@@ -115,6 +115,10 @@ public class Knight : MonoBehaviour
                 {
                     CurrentGameState.score--;
                 }
+                else
+                {
+                    CurrentGameState.score++;
+                }
 
                 // update ui
                 return;
@@ -159,7 +163,9 @@ public class Knight : MonoBehaviour
             if (worstTier < _currentEnemy.weapon.tier)
             {
                 CurrentGameState.swords[worstSlot] = Instantiate(_currentEnemy.weapon);
-                //CurrentGameState.swords[worstSlot].usagesLeft = CurrentGameState.swords[worstSlot].baseUsage;
+
+                _gameplayManager._smithyManager._uiText.text =
+                    string.Format("You picked up a {0}", _currentEnemy.weapon.swordName);
             }
 
         }

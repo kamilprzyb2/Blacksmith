@@ -9,7 +9,7 @@ public enum DIALOGUE
 }
 public class DialogueManager : MonoBehaviour
 {
-    private const float DELAY = 3f;
+    private const float DELAY = 4.5f;
     private TextMeshPro _textMesh;
 
     [SerializeField] private List<string> _dialoguesBlacksmith;
