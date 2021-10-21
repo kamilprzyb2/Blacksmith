@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class GameplayManager : MonoBehaviour
 {
+    private const float DELAY_BETWEEN_SWORD_VALUE_BUMPS = 0.5f;
+
     [SerializeField] private Sword[] _starterSwords = new Sword[3];
 
     [SerializeField] private SmithyManager _smithyManager;
@@ -14,9 +16,8 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private float _knightSpeed = 1f;
     [SerializeField] private float _smoothTime = 0.3f;
 
-    [SerializeField] private Image _sword1;
-    [SerializeField] private Image _sword2;
-    [SerializeField] private Image _sword3;
+    [SerializeField] private Image[] _swordIcons = new Image[3];
+    [SerializeField] private Text[] _swordUsageTexts = new Text[3];
 
     private Vector3 _cameraStartPos;
     private Vector3 _velocity = Vector3.zero;
@@ -33,16 +34,17 @@ public class GameplayManager : MonoBehaviour
             if (sword != null && i < CurrentGameState.swords.Length)
             {
                 CurrentGameState.swords[i] = Instantiate(sword);
+                CurrentGameState.swords[i].usagesLeft = CurrentGameState.swords[i].baseUsage;
             }
             i++;
         }
 
         CurrentGameState.state = GameState.SEARCHING;
-        UpdateUI();
     }
-
     void Update()
     {
+        UpdateUI();
+
         switch (CurrentGameState.state)
         {
             case GameState.STARTDIALOGUE:
@@ -66,7 +68,8 @@ public class GameplayManager : MonoBehaviour
                 {
                     if (!_transitionFlag)
                     {
-                        CurrentGameState.ResetSwordUsages();
+                        // moved
+                        // CurrentGameState.ResetSwordUsages();
                         CurrentGameState.currentSwordIndex = 0;
 
                         _levelManager.ChangeLevel();
@@ -153,63 +156,59 @@ public class GameplayManager : MonoBehaviour
             ref _velocity,
             _smoothTime);
     }
-
     public void UpdateUI()
     {
-        if (CurrentGameState.swords[0] == null)
+        for(int i = 0; i < CurrentGameState.swords.Length; i++)
         {
-            _sword1.color = new Color(
-                _sword1.color.r,
-                _sword1.color.g,
-                _sword1.color.b,
-                0f);
-        }
-        else
-        {
-            _sword1.sprite = CurrentGameState.swords[0].sprite;
-            _sword1.color = new Color(
-                _sword1.color.r,
-                _sword1.color.g,
-                _sword1.color.b,
-                255f);
-        }
+            if (CurrentGameState.swords[i] == null)           
+            {
+                // invisible
+                _swordIcons[i].color = new Color(_swordIcons[i].color.r, _swordIcons[i].color.g, _swordIcons[i].color.b, 0f);
+                _swordUsageTexts[i].text = "";
+            }
+            else 
+            {
+                // visible
+                _swordIcons[i].color = new Color(_swordIcons[i].color.r, _swordIcons[i].color.g, _swordIcons[i].color.b, 255f);
+                _swordIcons[i].sprite = CurrentGameState.swords[i].sprite;
+                _swordUsageTexts[i].text = CurrentGameState.swords[i].usagesLeft == 0 ? "X" : CurrentGameState.swords[i].usagesLeft.ToString() ;
 
-        if (CurrentGameState.swords[1] == null)
-        {
-            _sword2.color = new Color(
-                _sword2.color.r,
-                _sword2.color.g,
-                _sword2.color.b,
-                0f);
+                if (i == CurrentGameState.currentSwordIndex)
+                {
+                    _swordIcons[i].rectTransform.localScale = new Vector3(2.3f, 2.3f);
+                    _swordUsageTexts[i].color = Color.yellow;
+                }
+                else
+                {
+                    _swordIcons[i].rectTransform.localScale = new Vector3(1.7f, 1.7f);
+                    _swordUsageTexts[i].color = Color.white;
+                }    
+            }
         }
-        else
-        {
-            _sword2.sprite = CurrentGameState.swords[1].sprite;
-            _sword2.color = new Color(
-                _sword2.color.r,
-                _sword2.color.g,
-                _sword2.color.b,
-                255f);
-        }
-
-        if (CurrentGameState.swords[2] == null)
-        {
-            _sword3.color = new Color(
-                 _sword3.color.r,
-                 _sword3.color.g,
-                 _sword3.color.b,
-                 0f);
-        }
-        else
-        {
-            _sword3.sprite = CurrentGameState.swords[2].sprite;
-            _sword3.color = new Color(
-                _sword3.color.r,
-                _sword3.color.g,
-                _sword3.color.b,
-                255f);
-        }
-
     }
 
+
+    public IEnumerator BumpSwordTo(int slotIndex, int value)
+    {
+        // safety
+        if (CurrentGameState.swords[slotIndex] == null || value < CurrentGameState.swords[slotIndex].usagesLeft)
+        {
+            Debug.LogError("INVALID SWORD BUMP REQUEST!!!");
+            yield return null;
+        }
+
+        while (CurrentGameState.swords[slotIndex].usagesLeft != value)
+        {
+            
+            CurrentGameState.swords[slotIndex].usagesLeft++;
+            SwordUITextGrow(slotIndex);
+
+            yield return new WaitForSeconds(DELAY_BETWEEN_SWORD_VALUE_BUMPS);
+        }
+    }
+
+    public void SwordUITextGrow(int slotIndex)
+    {
+        _swordUsageTexts[slotIndex].GetComponent<Animator>().Play("UI_Usage_Text_Grow");
+    }
 }

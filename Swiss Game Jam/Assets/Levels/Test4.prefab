@@ -92,6 +92,10 @@ PrefabInstance:
       propertyPath: HP
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 307661250121375542, guid: 40dd5194554988a4c866d765480c7665, type: 3}
+      propertyPath: weapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 1fa9c6ce4594872408a58e8cc755977f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 40dd5194554988a4c866d765480c7665, type: 3}
 --- !u!4 &770373212079093059 stripped
@@ -157,7 +161,7 @@ PrefabInstance:
     - target: {fileID: 307661250121375542, guid: 40dd5194554988a4c866d765480c7665, type: 3}
       propertyPath: weapon
       value: 
-      objectReference: {fileID: 11400000, guid: 25eee3687a8e11542b226a15cd4b09b1, type: 2}
+      objectReference: {fileID: 11400000, guid: 9654ab36bd2f5f04d8904494f6b45b34, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 40dd5194554988a4c866d765480c7665, type: 3}
 --- !u!4 &1795602572031195041 stripped
@@ -224,6 +228,10 @@ PrefabInstance:
       propertyPath: HP
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 307661250121375542, guid: 40dd5194554988a4c866d765480c7665, type: 3}
+      propertyPath: weapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 1fa9c6ce4594872408a58e8cc755977f, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 40dd5194554988a4c866d765480c7665, type: 3}
 --- !u!4 &7599557420064160645 stripped
