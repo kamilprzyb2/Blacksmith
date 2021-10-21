@@ -24,6 +24,15 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private Text[] _swordUsageTexts = new Text[3];
     [SerializeField] private Text _scoreCounter;
 
+    [SerializeField] private SpriteRenderer _leaves;
+    [SerializeField] private Sprite _minus5;
+    [SerializeField] private Sprite _minus4;
+    [SerializeField] private Sprite _zero;
+    [SerializeField] private Sprite _two;
+    [SerializeField] private Sprite _four;
+    [SerializeField] private Sprite _five;
+
+
     private Vector3 _cameraStartPos;
     private Vector3 _velocity = Vector3.zero;
 
@@ -160,7 +169,33 @@ public class GameplayManager : MonoBehaviour
                     break;
                 }
 
-        }        
+        }
+
+        if (CurrentGameState.score <= -4)
+        {
+            _leaves.sprite = _minus5;
+        }
+        else if (CurrentGameState.score <= -2)
+        {
+            _leaves.sprite = _minus4;
+        }
+        else if (CurrentGameState.score <= 0)
+        {
+            _leaves.sprite = _zero;
+        }
+        else if (CurrentGameState.score <= 2)
+        {
+            _leaves.sprite = _two;
+        }
+        else if (CurrentGameState.score <= 4)
+        {
+            _leaves.sprite = _four;
+        }
+        else
+        {
+            _leaves.sprite = _five;
+        }
+
     }
     void MoveCameraWithKnight()
     {
