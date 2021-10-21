@@ -286,6 +286,7 @@ public class SmithyManager : MonoBehaviour
             if (CurrentGameState.swords[currentSwordIndex + 1] != null)
             {
                 currentSwordIndex++;
+                CurrentGameState.currentSwordIndex++;
                 //ResetBlacksmith();
                 Play(CurrentGameState.swords[currentSwordIndex].requiresCuts,
                 CurrentGameState.swords[currentSwordIndex].shaftSpeed);
