@@ -94,13 +94,19 @@ public class Knight : MonoBehaviour
                 _dialogueManager.ShowDialogue(DIALOGUE.FAILURE);
             }
 
-            if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1 &&
-                CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null &&
-                CurrentGameState.swords[CurrentGameState.currentSwordIndex + 1].usagesLeft > 0)
+            bool changedSword = false;
+            for (int i = CurrentGameState.currentSwordIndex + 1; i < CurrentGameState.swords.Length; i++) 
             {
-                CurrentGameState.currentSwordIndex++;
+
+                if (CurrentGameState.swords[i] != null && CurrentGameState.swords[i].usagesLeft > 0)
+                {
+                    CurrentGameState.currentSwordIndex = i;
+                    changedSword = true;
+                    break;
+                }
             }
-            else
+
+            if (!changedSword)
             {
                 CurrentGameState.state = GameState.RETRIEVING;
                 return;

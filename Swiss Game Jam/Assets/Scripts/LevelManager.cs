@@ -102,6 +102,20 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        return true;
+        //check if it isn't too easy
+        if (i < 3)
+        {
+            for (int j = i+1; j<3; j++)
+            {
+                if (CurrentGameState.swords[j] != null) 
+                {
+                    potentialUsage += CurrentGameState.swords[j].baseUsage + 3;
+                }
+            }
+            
+        }
+
+        Debug.Log("POTENTIAL "+ potentialUsage);
+        return potentialUsage < 4;
     }
 }

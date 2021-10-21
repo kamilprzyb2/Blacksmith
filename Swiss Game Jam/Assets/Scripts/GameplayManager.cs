@@ -169,6 +169,10 @@ public class GameplayManager : MonoBehaviour
                 _swordIcons[i].color = new Color(_swordIcons[i].color.r, _swordIcons[i].color.g, _swordIcons[i].color.b, 255f);
                 _swordIcons[i].sprite = CurrentGameState.swords[i].usagesLeft > 0 ?
                     CurrentGameState.swords[i].sprite : CurrentGameState.swords[i].damagedSprite;
+
+                if (CurrentGameState.swords[i].usagesLeft < 0)
+                    CurrentGameState.swords[i].usagesLeft = 0;
+
                 _swordUsageTexts[i].text = CurrentGameState.swords[i].usagesLeft == 0 ? "X" : CurrentGameState.swords[i].usagesLeft.ToString() ;
 
                 if (i == CurrentGameState.currentSwordIndex)
