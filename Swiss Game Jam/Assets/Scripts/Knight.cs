@@ -58,6 +58,7 @@ public class Knight : MonoBehaviour
             return;
 
         _currentEnemy.GetComponentInChildren<Animator>().Play("Goblin Hit");
+        _currentEnemy.GetComponent<AudioSource>().Play();
 
         Sword currentSword = CurrentGameState.CurrentSword();
         _currentEnemy.HP -= currentSword.baseDamage;
