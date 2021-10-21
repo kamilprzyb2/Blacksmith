@@ -20,6 +20,8 @@ public class SmithyManager : MonoBehaviour
     [SerializeField] private int _secondsToPrepare = 5;
     private float _shaftSpeed = 2f;
 
+    [SerializeField] private GameplayManager _gameplayManager;
+
     [SerializeField] private GameObject _cutTemplate;
     [SerializeField] private GameObject _shaftTemplate;
     [SerializeField] private GameObject _blastTemplate;
@@ -270,6 +272,8 @@ public class SmithyManager : MonoBehaviour
                 }
         }
 
+        StartCoroutine(_gameplayManager.BumpSwordTo(currentSwordIndex, currentSword.baseUsage + currentSword.addedUsage));
+        CurrentGameState.currentSwordIndex = currentSwordIndex;
 
     }
     IEnumerator FinishSword()

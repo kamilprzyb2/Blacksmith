@@ -7,9 +7,13 @@ public class Knight : MonoBehaviour
 {
     private Enemy _currentEnemy;
     private Animator _anim;
-    private AudioSource _audio;
+    [SerializeField]  private AudioSource _audio;
+    [SerializeField]  private AudioSource _audio2;
 
     [SerializeField] private AudioClip _swordBreak;
+    [SerializeField] private List<AudioClip> _hitSounds;
+
+
     [SerializeField] private GameObject _MarkupTemplate;
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private GameplayManager _gameplayManager;
@@ -20,7 +24,6 @@ public class Knight : MonoBehaviour
     private void Start()
     {
         _anim = GetComponent<Animator>();
-        _audio = GetComponent<AudioSource>();
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -71,18 +74,20 @@ public class Knight : MonoBehaviour
             _enemyHealthBar.GetComponent<Healthbar>().ShowState((float)_currentEnemy.HP / (float)_baseEnemyHP);
         }
 
-
         currentSword.usagesLeft--;
+        _gameplayManager.SwordUITextGrow(CurrentGameState.currentSwordIndex);
 
         if (currentSword.usagesLeft <= 0)
         {
+            _audio.Stop();
             _audio.clip = _swordBreak;
             _audio.Play();
 
             if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1 &&
-                CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null)
+                CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null &&
+                CurrentGameState.swords[CurrentGameState.currentSwordIndex + 1].usagesLeft > 0)
             {
-                // uselss?
+                CurrentGameState.currentSwordIndex++;
             }
             else
             {
@@ -96,7 +101,13 @@ public class Knight : MonoBehaviour
             _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);
         }
     }
-
+    // Called from Animation Event
+    public void PlayAttackSound()
+    {
+        _audio.Stop();
+        _audio.clip = _hitSounds[Random.Range(0, _hitSounds.Count)];
+        _audio.Play();
+    }
     private void KillEnemy()
     {
         // weapon pickup mechanic
@@ -123,7 +134,7 @@ public class Knight : MonoBehaviour
             if (worstTier < _currentEnemy.weapon.tier)
             {
                 CurrentGameState.swords[worstSlot] = Instantiate(_currentEnemy.weapon);
-                _gameplayManager.UpdateUI();
+                //CurrentGameState.swords[worstSlot].usagesLeft = CurrentGameState.swords[worstSlot].baseUsage;
             }
 
         }
