@@ -44,6 +44,7 @@ public class GameplayManager : MonoBehaviour
         }
 
         CurrentGameState.state = GameState.SEARCHING;
+        _knight.GetComponent<Knight>().FootSteps(true);
     }
     void Update()
     {
@@ -112,6 +113,7 @@ public class GameplayManager : MonoBehaviour
                     if (!_transitionFlag)
                     {
                         _knight.GetComponent<Animator>().SetBool("MoveLeft", false);
+                        _knight.GetComponent<Knight>().FootSteps(false);
                         _transitionFlag = true;
                     }
 
@@ -121,6 +123,11 @@ public class GameplayManager : MonoBehaviour
                 {
                     _knight.transform.position =
                         _knight.transform.position + Vector3.right * _knightSpeed * Time.deltaTime;
+
+                    if (_transitionFlag)
+                    {
+                        _knight.GetComponent<Knight>().FootSteps(true);
+                    }
 
                     MoveCameraWithKnight();
 
@@ -221,11 +228,13 @@ public class GameplayManager : MonoBehaviour
             case GameState.SMITHING:
                 {
                     _dialogueManager.ShowDialogue(DIALOGUE.BLACKSMITH);
+                    _knight.GetComponent<Knight>().FootSteps(false);
                     break;
                 }
             case GameState.SEARCHING:
                 {
                     _dialogueManager.ShowDialogue(DIALOGUE.THANKS);
+
                     break;
                 }
         }
@@ -236,6 +245,9 @@ public class GameplayManager : MonoBehaviour
     {
         yield return new WaitForSeconds(TRANSITION_DURATION);
         CurrentGameState.state = state;
+
+        if (state == GameState.SEARCHING)
+            _knight.GetComponent<Knight>().FootSteps(true);
     }
 
 }

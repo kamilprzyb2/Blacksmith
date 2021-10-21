@@ -14,6 +14,7 @@ public class Knight : MonoBehaviour
 
     [SerializeField] private AudioClip _swordBreak;
     [SerializeField] private List<AudioClip> _hitSounds;
+    [SerializeField] private AudioClip _footSteps;
 
 
     [SerializeField] private GameObject _MarkupTemplate;
@@ -167,5 +168,17 @@ public class Knight : MonoBehaviour
         }
         else
             CurrentGameState.state = GameState.SEARCHING;
+    }
+    public void FootSteps(bool on)
+    {
+        if (on)
+        {
+            _audio2.clip = _footSteps;
+            _audio2.Play();
+        }
+        else
+        {
+            _audio2.Stop();
+        }
     }
 }

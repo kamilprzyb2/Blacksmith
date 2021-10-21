@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e265d8849349dd4498a57c2f89418ca4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HP: 7
+  HP: 1
   weapon: {fileID: 0}
 --- !u!50 &307661250121375538
 Rigidbody2D:
