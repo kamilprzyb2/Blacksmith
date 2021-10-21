@@ -22,6 +22,7 @@ public class GameplayManager : MonoBehaviour
 
     [SerializeField] private Image[] _swordIcons = new Image[3];
     [SerializeField] private Text[] _swordUsageTexts = new Text[3];
+    [SerializeField] private Text _scoreCounter;
 
     private Vector3 _cameraStartPos;
     private Vector3 _velocity = Vector3.zero;
@@ -194,6 +195,8 @@ public class GameplayManager : MonoBehaviour
                 }
             }
         }
+
+        _scoreCounter.text = CurrentGameState.score.ToString();
     }
     public IEnumerator BumpSwordTo(int slotIndex, int value)
     {

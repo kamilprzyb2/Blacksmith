@@ -19,6 +19,6 @@ MonoBehaviour:
   baseUsage: 1
   baseDamage: 2
   sprite: {fileID: 21300000, guid: baf1f43ccc4082748879c3d9aee847f6, type: 3}
-  damagedSprite: {fileID: 21300000, guid: 8f07169d8b7c08c4383fa9dd25475793, type: 3}
+  damagedSprite: {fileID: 21300000, guid: 56cb23078a4bd864d8bbc4babc0928fa, type: 3}
   usagesLeft: 0
   addedUsage: 0

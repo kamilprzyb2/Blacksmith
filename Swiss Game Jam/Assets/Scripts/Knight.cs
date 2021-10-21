@@ -110,6 +110,13 @@ public class Knight : MonoBehaviour
             if (!changedSword)
             {
                 CurrentGameState.state = GameState.RETRIEVING;
+
+                if (_levelManager.EnemiesRemaining() >= 0)
+                {
+                    CurrentGameState.score--;
+                }
+
+                // update ui
                 return;
             }
         }
@@ -165,6 +172,7 @@ public class Knight : MonoBehaviour
         {
             _dialogueManager.ShowDialogue(DIALOGUE.SUCCESS);
             CurrentGameState.state = GameState.RETRIEVING;
+            CurrentGameState.score++;            
         }
         else
             CurrentGameState.state = GameState.SEARCHING;
