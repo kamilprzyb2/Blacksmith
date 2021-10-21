@@ -2631,7 +2631,10 @@ MonoBehaviour:
   _audio2: {fileID: 1751719951}
   _swordBreak: {fileID: 8300000, guid: 448f6c049f0cf9440bda65e8c25800b2, type: 3}
   _hitSounds:
-  - {fileID: 8300000, guid: b3dcb3cf666174842a583be614ef2824, type: 3}
+  - {fileID: 8300000, guid: f4d95451b7d36e84bbd740c912ebb377, type: 3}
+  - {fileID: 8300000, guid: dcd52a511e8974b4c841ed8d685e1b28, type: 3}
+  - {fileID: 8300000, guid: c2082365260eb604e84b3abc5c1fdc86, type: 3}
+  - {fileID: 8300000, guid: 28e692f0e45084247bcb83ed7cf7a078, type: 3}
   _MarkupTemplate: {fileID: 4700953457322266198, guid: 80a008df38e49e74789d36040f6172f0, type: 3}
   _levelManager: {fileID: 1337034427}
   _gameplayManager: {fileID: 1570911138}

@@ -36,7 +36,7 @@ public class Knight : MonoBehaviour
                 _baseEnemyHP = _currentEnemy.HP;
                 _enemyHealthBar = Instantiate(_healthBarTemplate, _currentEnemy.transform);
 
-                _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);
+                _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);              
             }
         }
         else if (other.GetComponent<KnightStop>() != null && 
@@ -56,6 +56,8 @@ public class Knight : MonoBehaviour
 
         if (_currentEnemy == null)
             return;
+
+        _currentEnemy.GetComponentInChildren<Animator>().Play("Goblin Hit");
 
         Sword currentSword = CurrentGameState.CurrentSword();
         _currentEnemy.HP -= currentSword.baseDamage;
@@ -139,7 +141,8 @@ public class Knight : MonoBehaviour
 
         }
 
-        Destroy(_currentEnemy.gameObject);
+        _currentEnemy.GetComponentInChildren<Animator>().Play("Goblin Death");
+        //Destroy(_currentEnemy.gameObject);
         _currentEnemy = null;
 
         if (_levelManager.EnemiesRemaining() <= 0)
