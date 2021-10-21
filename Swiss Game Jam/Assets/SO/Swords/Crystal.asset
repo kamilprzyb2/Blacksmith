@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ba94303e7a8304b9e0bf02d79c3612, type: 3}
   m_Name: Crystal
   m_EditorClassIdentifier: 
-  swordName: Steel Sword
-  tier: 4
+  swordName: Victorinox
+  tier: 5
   requiresCuts: 4
-  shaftSpeed: 5
+  shaftSpeed: 4
   baseUsage: 1
   baseDamage: 16
-  sprite: {fileID: 21300000, guid: f38c3a7970ab3f048b5185f2c9fd8734, type: 3}
-  damagedSprite: {fileID: 21300000, guid: 7f73e922b3031dc46baf49fd069e1b66, type: 3}
+  sprite: {fileID: 21300000, guid: 6471f6232e0083e4db315a11ee9de482, type: 3}
+  damagedSprite: {fileID: 21300000, guid: 67a85424b7a50a948a29ab5605051044, type: 3}
   usagesLeft: 0
   addedUsage: 0

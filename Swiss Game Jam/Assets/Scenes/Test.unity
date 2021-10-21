@@ -2328,7 +2328,7 @@ MonoBehaviour:
   _dialoguesFailure:
   - Maybe I should really look for a bard companion
   - Zaraza
-  - Maybe I should really lOops!... I did it again. Maybe I should start using Spears?
+  - Oops!... I did it again. Maybe I should start using Spears?
   - Look behind you, a three-headed monkey!
   - FUCK! NOT AGAIN...
   _dialoguesSuccess:
