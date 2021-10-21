@@ -12,6 +12,11 @@ public class Knight : MonoBehaviour
     [SerializeField] private AudioClip _swordBreak;
     [SerializeField] private GameObject _MarkupTemplate;
     [SerializeField] private LevelManager _levelManager;
+    [SerializeField] private GameplayManager _gameplayManager;
+    [SerializeField] private GameObject _healthBarTemplate;
+
+    private int _baseEnemyHP;
+    private GameObject _enemyHealthBar;
     private void Start()
     {
         _anim = GetComponent<Animator>();
@@ -24,6 +29,10 @@ public class Knight : MonoBehaviour
             if (CurrentGameState.state == GameState.SEARCHING)
             {
                 CurrentGameState.state = GameState.FIGHTING;
+
+                _baseEnemyHP = _currentEnemy.HP;
+                _enemyHealthBar = Instantiate(_healthBarTemplate, _currentEnemy.transform);
+
                 _anim.SetInteger("Attacks", _anim.GetInteger("Attacks") + 1);
             }
         }
@@ -53,8 +62,15 @@ public class Knight : MonoBehaviour
 
         if (_currentEnemy.HP <= 0)
         {
+            Destroy(_enemyHealthBar);
+            _enemyHealthBar = null;
             KillEnemy();
         }
+        else
+        {
+            _enemyHealthBar.GetComponent<Healthbar>().ShowState((float)_currentEnemy.HP / (float)_baseEnemyHP);
+        }
+
 
         currentSword.usagesLeft--;
 
@@ -87,7 +103,7 @@ public class Knight : MonoBehaviour
         if (_currentEnemy.weapon != null)
         {
             int worstSlot = 0;
-            SwordTier worstTier = SwordTier.DIAMOND;
+            SwordTier worstTier = SwordTier.VICTORINOX;
             for (int i = 0; i < CurrentGameState.swords.Length; i++)
             {
                 if (CurrentGameState.swords[i] == null)
@@ -107,6 +123,7 @@ public class Knight : MonoBehaviour
             if (worstTier < _currentEnemy.weapon.tier)
             {
                 CurrentGameState.swords[worstSlot] = Instantiate(_currentEnemy.weapon);
+                _gameplayManager.UpdateUI();
             }
 
         }

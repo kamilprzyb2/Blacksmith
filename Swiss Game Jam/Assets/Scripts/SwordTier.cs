@@ -4,5 +4,5 @@ using UnityEngine;
 
 public enum SwordTier
 {
-    NULL, COPPER, BRONZE, SILVER, GOLDEN, DIAMOND
+    NULL, RUSTY, STEEL, SILVER, CRYSTAL, VICTORINOX
 }

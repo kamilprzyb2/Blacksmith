@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13ba94303e7a8304b9e0bf02d79c3612, type: 3}
-  m_Name: Test1 2
+  m_Name: Victorinox
   m_EditorClassIdentifier: 
-  swordName: Test3
-  tier: 1
-  requiresCuts: 4
-  shaftSpeed: 3.5
+  swordName: Victorinox
+  tier: 5
+  requiresCuts: 3
+  shaftSpeed: 3
   baseUsage: 1
   baseDamage: 3
+  sprite: {fileID: 21300000, guid: 6471f6232e0083e4db315a11ee9de482, type: 3}
   usagesLeft: 0
   addedUsage: 0
