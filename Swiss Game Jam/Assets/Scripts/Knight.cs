@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Knight : MonoBehaviour
 {
+    private const float BROKEN_SWORD_DIALOGUE_PROBABILITY = 0.3f;
+
     private Enemy _currentEnemy;
     private Animator _anim;
     [SerializeField]  private AudioSource _audio;
@@ -16,6 +18,7 @@ public class Knight : MonoBehaviour
 
     [SerializeField] private GameObject _MarkupTemplate;
     [SerializeField] private LevelManager _levelManager;
+    [SerializeField] private DialogueManager _dialogueManager;
     [SerializeField] private GameplayManager _gameplayManager;
     [SerializeField] private GameObject _healthBarTemplate;
 
@@ -86,6 +89,11 @@ public class Knight : MonoBehaviour
             _audio.clip = _swordBreak;
             _audio.Play();
 
+            if (Random.Range(0f, 1f) < BROKEN_SWORD_DIALOGUE_PROBABILITY)
+            {
+                _dialogueManager.ShowDialogue(DIALOGUE.FAILURE);
+            }
+
             if (CurrentGameState.currentSwordIndex < CurrentGameState.swords.Length - 1 &&
                 CurrentGameState.swords[CurrentGameState.currentSwordIndex+1] != null &&
                 CurrentGameState.swords[CurrentGameState.currentSwordIndex + 1].usagesLeft > 0)
@@ -147,7 +155,10 @@ public class Knight : MonoBehaviour
         _currentEnemy = null;
 
         if (_levelManager.EnemiesRemaining() <= 0)
+        {
+            _dialogueManager.ShowDialogue(DIALOGUE.SUCCESS);
             CurrentGameState.state = GameState.RETRIEVING;
+        }
         else
             CurrentGameState.state = GameState.SEARCHING;
     }

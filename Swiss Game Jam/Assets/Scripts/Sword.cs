@@ -12,6 +12,7 @@ public class Sword : ScriptableObject
     public int baseUsage = 1;
     public int baseDamage = 3;
     public Sprite sprite;
+    public Sprite damagedSprite;
 
     public int usagesLeft;
     public int addedUsage = 0;

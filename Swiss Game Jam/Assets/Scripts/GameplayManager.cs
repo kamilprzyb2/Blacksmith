@@ -6,15 +6,19 @@ using UnityEngine.UI;
 public class GameplayManager : MonoBehaviour
 {
     private const float DELAY_BETWEEN_SWORD_VALUE_BUMPS = 0.5f;
+    private const float TRANSITION_DURATION = 1f;
 
     [SerializeField] private Sword[] _starterSwords = new Sword[3];
 
     [SerializeField] private SmithyManager _smithyManager;
     [SerializeField] private LevelManager _levelManager;
+    [SerializeField] private DialogueManager _dialogueManager;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private GameObject _knight;
     [SerializeField] private float _knightSpeed = 1f;
     [SerializeField] private float _smoothTime = 0.3f;
+
+    [SerializeField] private Color _selectionColor;
 
     [SerializeField] private Image[] _swordIcons = new Image[3];
     [SerializeField] private Text[] _swordUsageTexts = new Text[3];
@@ -53,11 +57,7 @@ public class GameplayManager : MonoBehaviour
                     {
                         _knight.GetComponent<Animator>().SetBool("MoveRight", false);
                         _transitionFlag = true;
-                    }
-
-                    if (Input.anyKeyDown)
-                    {
-                        CurrentGameState.state = GameState.SMITHING;
+                        TransitionTo(GameState.SMITHING);
                     }
 
                     MoveCameraToSmith();
@@ -72,15 +72,12 @@ public class GameplayManager : MonoBehaviour
                         // CurrentGameState.ResetSwordUsages();
                         CurrentGameState.currentSwordIndex = 0;
 
+                        TransitionTo(GameState.SEARCHING);
                         _levelManager.ChangeLevel();
 
                         _transitionFlag = true;
                     }
 
-                    if (Input.anyKeyDown)
-                    {
-                        CurrentGameState.state = GameState.SEARCHING;
-                    }
                     break;
                 }
             case GameState.SMITHING:
@@ -170,24 +167,23 @@ public class GameplayManager : MonoBehaviour
             {
                 // visible
                 _swordIcons[i].color = new Color(_swordIcons[i].color.r, _swordIcons[i].color.g, _swordIcons[i].color.b, 255f);
-                _swordIcons[i].sprite = CurrentGameState.swords[i].sprite;
+                _swordIcons[i].sprite = CurrentGameState.swords[i].usagesLeft > 0 ?
+                    CurrentGameState.swords[i].sprite : CurrentGameState.swords[i].damagedSprite;
                 _swordUsageTexts[i].text = CurrentGameState.swords[i].usagesLeft == 0 ? "X" : CurrentGameState.swords[i].usagesLeft.ToString() ;
 
                 if (i == CurrentGameState.currentSwordIndex)
                 {
                     _swordIcons[i].rectTransform.localScale = new Vector3(2.3f, 2.3f);
-                    _swordUsageTexts[i].color = Color.yellow;
+                    _swordUsageTexts[i].color = _selectionColor;
                 }
                 else
                 {
                     _swordIcons[i].rectTransform.localScale = new Vector3(1.7f, 1.7f);
                     _swordUsageTexts[i].color = Color.white;
-                }    
+                }
             }
         }
     }
-
-
     public IEnumerator BumpSwordTo(int slotIndex, int value)
     {
         // safety
@@ -196,14 +192,16 @@ public class GameplayManager : MonoBehaviour
             Debug.LogError("INVALID SWORD BUMP REQUEST!!!");
             yield return null;
         }
-
-        while (CurrentGameState.swords[slotIndex].usagesLeft != value)
+        else
         {
-            
-            CurrentGameState.swords[slotIndex].usagesLeft++;
-            SwordUITextGrow(slotIndex);
+            while (CurrentGameState.swords[slotIndex].usagesLeft != value)
+            {
 
-            yield return new WaitForSeconds(DELAY_BETWEEN_SWORD_VALUE_BUMPS);
+                CurrentGameState.swords[slotIndex].usagesLeft++;
+                SwordUITextGrow(slotIndex);
+
+                yield return new WaitForSeconds(DELAY_BETWEEN_SWORD_VALUE_BUMPS);
+            }
         }
     }
 
@@ -211,4 +209,29 @@ public class GameplayManager : MonoBehaviour
     {
         _swordUsageTexts[slotIndex].GetComponent<Animator>().Play("UI_Usage_Text_Grow");
     }
+
+    private void TransitionTo(GameState state)
+    {
+        switch (state)
+        {
+            case GameState.SMITHING:
+                {
+                    _dialogueManager.ShowDialogue(DIALOGUE.BLACKSMITH);
+                    break;
+                }
+            case GameState.SEARCHING:
+                {
+                    _dialogueManager.ShowDialogue(DIALOGUE.THANKS);
+                    break;
+                }
+        }
+        StartCoroutine(DelayedTransition(state));
+    }
+
+    IEnumerator DelayedTransition(GameState state)
+    {
+        yield return new WaitForSeconds(TRANSITION_DURATION);
+        CurrentGameState.state = state;
+    }
+
 }
