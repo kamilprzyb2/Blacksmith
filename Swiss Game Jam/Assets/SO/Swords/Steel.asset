@@ -15,9 +15,9 @@ MonoBehaviour:
   swordName: Steel Sword
   tier: 2
   requiresCuts: 3
-  shaftSpeed: 3
+  shaftSpeed: 4
   baseUsage: 1
-  baseDamage: 3
+  baseDamage: 4
   sprite: {fileID: 21300000, guid: f38c3a7970ab3f048b5185f2c9fd8734, type: 3}
   damagedSprite: {fileID: 21300000, guid: ed12d2ae0d722fe4791a8202d9c49ff5, type: 3}
   usagesLeft: 0
