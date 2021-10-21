@@ -36,7 +36,7 @@ public class SmithyManager : MonoBehaviour
     
     [SerializeField] private GameObject _cutsParent;
 
-    [SerializeField] private Text _uiText;
+    [SerializeField] public Text _uiText;
     [SerializeField] private Color _colorGradePoor;
     [SerializeField] private Color _colorGradeOK;
     [SerializeField] private Color _colorGradeGood;
